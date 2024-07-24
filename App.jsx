@@ -9,6 +9,7 @@ import { notesCollection, db } from "./firebase"
 export default function App() {
     const [notes, setNotes] = React.useState([])
     const [currentNoteId, setCurrentNoteId] = React.useState("")
+    const [tempNoteText, setTempNoteText] = React.useState("")
     
     const sortedNotes = notes.sort((a,b) => {
         return b.updatedAt - a.updatedAt
@@ -35,6 +36,12 @@ export default function App() {
             setCurrentNoteId(notes[0]?.id)
         }
     }, [notes])
+
+    React.useEffect(() => {
+        if (currentNote) {
+            setTempNoteText((oldTempNoteText) => currentNote.body)
+        }
+    }, [currentNote])
 
     async function createNewNote() {
         const newNote = {
@@ -68,14 +75,14 @@ export default function App() {
                     >
                         <Sidebar
                             notes={sortedNotes}
-                            currentNote={currentNote}
+                            currentNote={tempNoteText}
                             setCurrentNoteId={setCurrentNoteId}
                             newNote={createNewNote}
                             deleteNote={deleteNote}
                         />
                         <Editor
-                            currentNote={currentNote}
-                            updateNote={updateNote}
+                            tempNoteText={tempNoteText}
+                            setTempNoteText={setTempNoteText}
                         />
                     </Split>
                     :
